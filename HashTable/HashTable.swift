@@ -17,11 +17,14 @@ final class HashTable : Hasher {
     
     var hasher : SHA512
     var tableOfPersons : UnsafeMutablePointer<Person?>
+    var tableOfUsers : UnsafeMutablePointer<LinkedList?>
     var count : Int
     public
     
     init(number_of_people number : Int){
         hasher = SHA512(seed: "")
+        tableOfUsers = UnsafeMutablePointer<LinkedList?>.allocate(capacity: number)
+        tableOfUsers.initialize(repeating:nil, count: number)
         tableOfPersons = UnsafeMutablePointer<Person?>.allocate(capacity: number)
         count = number
     }
@@ -40,36 +43,28 @@ final class HashTable : Hasher {
        user_id%=count
         return user_id
     }
+    func insertUser(person : Person){
+        let user_id : Int = hash(input : person.name)
+        tableOfUsers[user_id]?.listHead != nil ? (tableOfUsers[user_id]?.insertPerson(person: person)) : (tableOfUsers[user_id] = LinkedList(person: person))
+        print("Inserted user \(person.name) with ID \(user_id)")
 
-    
-    func insertPerson(person : Person){
-        let user_id : Int = hash(input: person.name)
-        if tableOfPersons[user_id]?.name.count != nil {
-            print("User ID already assigned")
-            return
-        }
-        tableOfPersons[user_id] = person
-        print("ID is \(user_id)")
-        
     }
     
-    func removePerson(perso_name name : String){
+    func removeUser(person_name name: String){
         let user_id : Int = hash(input : name)
-        if tableOfPersons[user_id] == nil{
-            print("No such user exists")
-            return
+        if (tableOfUsers[user_id]?.removePerson(person: name))!{
+            print("User \(name) has been succesfully removed")
+        }else{
+            print("No such user")
         }
-        tableOfPersons[user_id] = nil
-        print("User \(user_id) has been removed from the table")
     }
-    
-    func searchForPerson(person_name name: String){
-        let user_id : Int = hash(input: name)
-        if tableOfPersons[user_id] == nil{
-            print("Could not find searched user")
+    func searchForUser(person_name name : String){
+        let user_id : Int = hash(input : name)
+        if let user = tableOfUsers[user_id]?.searchForPerson(person: name){
+            print("Found searched user \(user)")
             return
         }
-        print(tableOfPersons[user_id]!)
+        print("Could not find searched user \(name)")
     }
     
     
