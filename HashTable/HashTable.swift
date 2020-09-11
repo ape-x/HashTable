@@ -16,7 +16,6 @@ final class HashTable : Hasher {
     private
     
     var hasher : SHA512
-    var tableOfPersons : UnsafeMutablePointer<Person?>
     var tableOfUsers : UnsafeMutablePointer<LinkedList?>
     var count : Int
     public
@@ -25,7 +24,6 @@ final class HashTable : Hasher {
         hasher = SHA512(seed: "")
         tableOfUsers = UnsafeMutablePointer<LinkedList?>.allocate(capacity: number)
         tableOfUsers.initialize(repeating:nil, count: number)
-        tableOfPersons = UnsafeMutablePointer<Person?>.allocate(capacity: number)
         count = number
     }
     
